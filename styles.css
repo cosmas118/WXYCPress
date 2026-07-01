@@ -200,3 +200,37 @@ header {
   opacity: 1;
 }
 ``
+.card-date {
+  margin-bottom: 8px;
+}
+
+.card-artist {
+  margin-bottom: 10px;
+}
+
+.card-venue {
+  margin-bottom: 14px;
+  font-size: 0.85rem;
+  color: rgba(240,236,227,0.6);
+}
+
+/* ✅ big gap before genres */
+.card-genres {
+  margin-bottom: 14px;
+}
+
+/* ✅ breathing room before description */
+.card-desc {
+  margin-top: 8px;
+  margin-bottom: 18px;
+}
+.card-venue {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(240,236,227,0.5);
+}
+.card-genres {
+  padding-top: 4px;
+}
