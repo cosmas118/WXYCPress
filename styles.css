@@ -267,4 +267,48 @@ header {
   color: white;
   border: 1px solid #444;
 }
-``
+#admin-panel {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: #0d0d0d;
+  overflow-y: auto;
+}
+
+#admin-panel.open {
+  display: block;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 24px 40px;
+  border-bottom: 1px solid rgba(232,197,71,0.15);
+  background: #0d0d0d;
+}
+
+.admin-header h1 {
+  font-family: 'Bebas Neue';
+  font-size: 1.8rem;
+  color: var(--accent);
+}
+
+.admin-body {
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.admin-section {
+  background: #111;
+  border: 1px solid rgba(232,197,71,0.1);
+  padding: 25px;
+  margin-bottom: 25px;
+}
+
+.admin-section h2 {
+  font-family: 'Bebas Neue';
+  margin-bottom: 12px;
+  color: var(--white);
+}
