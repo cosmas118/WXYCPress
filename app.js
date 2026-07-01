@@ -375,9 +375,11 @@ async function loadAdminConcerts() {
     const div = document.createElement('div');
 
     div.innerHTML = `
-      ${c.artist} (${c.date})
-      <button onclick="deleteConcert('${c.id}')">Delete</button>
-    `;
+  <strong>${c.artist}</strong> (${c.date})<br>
+  <span style="opacity:0.6">${c.venue}</span>
+  <br>
+  <button class="btn sm danger" onclick="deleteConcert('${c.id}')">Delete</button>
+`;
 
     container.appendChild(div);
   });
