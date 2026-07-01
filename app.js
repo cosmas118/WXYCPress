@@ -263,11 +263,7 @@ function renderConcerts() {
         ${c.descp || ''}
       </div>
 
-      <button class="read-more-btn"
-        onclick="toggleReadMore('${c.id}', this)">
-        Read More
-      </button>
-
+      
       <div class="card-footer">
         <button class="interest-btn ${isInterested ? 'on' : ''}"
           onclick="toggleInterest('${c.id}')">
