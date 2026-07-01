@@ -86,3 +86,117 @@ header {
 
 .logo {
   font-family: 'Bebas Neue',
+    }
+.concert-card {
+  background: var(--glass);
+  border: 1px solid rgba(120, 70, 200, 0.6);
+  border-radius: 6px;
+  padding: 26px;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.concert-card:hover {
+  transform: translateY(-4px);
+  border-color: rgb(160, 110, 255);
+  box-shadow: 0 12px 35px rgba(120, 70, 200, 0.3);
+}
+.card-artist {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+``
+.card-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.genre-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+
+  border-radius: 999px; /* makes them bubbles */
+
+  border: 1px solid rgba(120, 70, 200, 0.6);
+  color: rgba(240,236,227,0.85);
+
+  background: rgba(120, 70, 200, 0.15);
+
+  transition: all 0.2s;
+}
+
+.genre-tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+``
+.card-desc {
+  font-size: 0.85rem;
+  color: rgba(240,236,227,0.7);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.interest-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: 2px;
+
+  border: 1px solid rgba(240,236,227,0.2);
+  background: transparent;
+  color: rgba(240,236,227,0.5);
+
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.interest-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.interest-btn.on {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--black);
+}
+.ticket-link {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  color: rgba(240,236,227,0.4);
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.ticket-link:hover {
+  color: var(--accent);
+}
+
+.concert-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent);
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.concert-card:hover::before {
+  opacity: 1;
+}
+``
