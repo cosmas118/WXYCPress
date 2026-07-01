@@ -23,7 +23,7 @@ function showToast(msg, isError = false) {
   setTimeout(() => t.className = '', 3000);
 }
 
-// Simple hash
+// HASH
 async function hashPassword(pw) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
@@ -45,26 +45,25 @@ async function doLogin(username, password) {
     .select('*')
     .eq('name', username)
     .single();
-document.getElementById('admin-open-btn').style.display = '';
 
   if (!data || data.password_hash !== hash) {
     showToast('Login failed', true);
     return;
-    
   }
 
   currentUser = data;
 
-// ✅ Show admin button ONLY for admin
-if (currentUser.name === 'admin') {
-  document.getElementById('admin-open-btn').style.display = '';
-}
-  document.getElementById('admin-open-btn').style.display = 'none';
+  // UI updates
   document.getElementById('login-btn').style.display = 'none';
   document.getElementById('logout-btn').style.display = '';
   document.getElementById('show-interested-btn').style.display = '';
 
-  loadUserInterests();
+  // Show admin only if admin
+  if (currentUser.name === 'admin') {
+    document.getElementById('admin-open-btn').style.display = '';
+  }
+
+  await loadUserInterests();
 
   showToast('Welcome ' + username);
   renderConcerts();
@@ -78,6 +77,7 @@ function logout() {
   document.getElementById('login-btn').style.display = '';
   document.getElementById('logout-btn').style.display = 'none';
   document.getElementById('show-interested-btn').style.display = 'none';
+  document.getElementById('admin-open-btn').style.display = 'none';
 
   renderConcerts();
 }
@@ -149,7 +149,7 @@ function toggleInterestedFilter() {
   renderConcerts();
 }
 
-// ═════════ BUILD FILTER OPTIONS ═════════
+// ═════════ FILTER BUILDERS ═════════
 function buildGenreFilters() {
   const set = new Set();
 
@@ -192,24 +192,21 @@ function buildVenueFilters() {
 async function loadConcerts() {
   document.getElementById('loading').style.display = 'block';
 
-  const { data } = await sb.from('concerts').select('*');
+  const { data, error } = await sb.from('concerts').select('*');
 
   document.getElementById('loading').style.display = 'none';
+
+  if (error) {
+    console.error(error);
+    showToast('Error loading concerts', true);
+    return;
+  }
 
   allConcerts = data || [];
 
   buildGenreFilters();
   buildVenueFilters();
   renderConcerts();
-}
-
-// ═════════ READ MORE ═════════
-function toggleReadMore(id, btn) {
-  const el = document.getElementById(`desc-${id}`);
-  el.classList.toggle('expanded');
-  btn.textContent = el.classList.contains('expanded')
-    ? 'Show Less'
-    : 'Read More';
 }
 
 // ═════════ RENDER ═════════
@@ -257,20 +254,15 @@ function renderConcerts() {
       .join('');
 
     const card = document.createElement('div');
-    card.className = 'concert-card' + (isInterested ? ' interested' : '');
+    card.className = 'concert-card';
 
     card.innerHTML = `
       <div class="card-date">${c.date || ''}</div>
       <div class="card-artist">${c.artist || ''}</div>
       <div class="card-venue">${c.venue || ''}</div>
-
       <div class="card-genres">${genres}</div>
+      <div class="card-desc">${c.descp || ''}</div>
 
-      <div class="card-desc short" id="desc-${c.id}">
-        ${c.descp || ''}
-      </div>
-
-      
       <div class="card-footer">
         <button class="interest-btn ${isInterested ? 'on' : ''}"
           onclick="toggleInterest('${c.id}')">
@@ -285,14 +277,7 @@ function renderConcerts() {
   });
 }
 
-// ═════════ ADMIN (simple access via URL) ═════════
-function checkAdminAccess() {
-  if (window.location.hash === '#admin') {
-    alert('Admin panel temporarily disabled in this version');
-  }
-}
-const ADMIN_PASSWORD = 'admin123'; // you can change this
-
+// ═════════ ADMIN ═════════
 function openAdminPanel() {
   if (!currentUser || currentUser.name !== 'admin') {
     showToast('Admin access required', true);
@@ -302,39 +287,29 @@ function openAdminPanel() {
   document.getElementById('admin-panel').classList.add('open');
   loadAdminConcerts();
 }
-``
-
-  document.getElementById('admin-panel').classList.add('open');
-  loadAdminConcerts();
-}
 
 function closeAdminPanel() {
   document.getElementById('admin-panel').classList.remove('open');
 }
+
 async function createUser() {
   const name = document.getElementById('new-user-name').value;
   const pass = document.getElementById('new-user-pass').value;
 
-  const status = document.getElementById('user-status');
-
   if (!name || !pass) {
-    status.textContent = 'Fill out both fields';
     return;
   }
 
   const hash = await hashPassword(pass);
 
-  const { error } = await sb.from('users').insert({
+  await sb.from('users').insert({
     name,
     password_hash: hash
   });
 
-  if (error) {
-    status.textContent = 'Error creating user';
-  } else {
-    status.textContent = 'User created!';
-  }
+  showToast('User created');
 }
+
 function handleCSVUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -353,33 +328,29 @@ function handleCSVUpload(event) {
         link: r.link
       }));
 
-      const { error } = await sb.from('concerts').insert(records);
+      await sb.from('concerts').insert(records);
 
-      if (error) {
-        document.getElementById('upload-status').textContent = 'Upload failed';
-      } else {
-        document.getElementById('upload-status').textContent = 'Upload success!';
-        loadConcerts();
-      }
+      showToast('Upload complete');
+      loadConcerts();
+      loadAdminConcerts();
     }
   });
 }
+
 async function loadAdminConcerts() {
   const { data } = await sb.from('concerts').select('*');
 
   const container = document.getElementById('admin-concerts');
-
   container.innerHTML = '';
 
-  data.forEach(c => {
+  (data || []).forEach(c => {
     const div = document.createElement('div');
 
     div.innerHTML = `
-  <strong>${c.artist}</strong> (${c.date})<br>
-  <span style="opacity:0.6">${c.venue}</span>
-  <br>
-  <button class="btn sm danger" onclick="deleteConcert('${c.id}')">Delete</button>
-`;
+      <strong>${c.artist}</strong> (${c.date})<br>
+      <span style="opacity:0.6">${c.venue}</span><br>
+      <button onclick="deleteConcert('${c.id}')">Delete</button>
+    `;
 
     container.appendChild(div);
   });
@@ -387,10 +358,10 @@ async function loadAdminConcerts() {
 
 async function deleteConcert(id) {
   await sb.from('concerts').delete().eq('id', id);
-  loadAdminConcerts();
   loadConcerts();
+  loadAdminConcerts();
 }
-// ═════════ INIT ═════════
-checkAdminAccess();
-loadConcerts();
 
+// ═════════ INIT ═════════
+loadConcerts();
+``
