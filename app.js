@@ -55,6 +55,11 @@ document.getElementById('admin-open-btn').style.display = '';
 
   currentUser = data;
 
+// ✅ Show admin button ONLY for admin
+if (currentUser.name === 'admin') {
+  document.getElementById('admin-open-btn').style.display = '';
+}
+  document.getElementById('admin-open-btn').style.display = 'none';
   document.getElementById('login-btn').style.display = 'none';
   document.getElementById('logout-btn').style.display = '';
   document.getElementById('show-interested-btn').style.display = '';
@@ -289,12 +294,15 @@ function checkAdminAccess() {
 const ADMIN_PASSWORD = 'admin123'; // you can change this
 
 function openAdminPanel() {
-  const pw = prompt("Admin password:");
-
-  if (pw !== ADMIN_PASSWORD) {
-    alert("Incorrect password");
+  if (!currentUser || currentUser.name !== 'admin') {
+    showToast('Admin access required', true);
     return;
   }
+
+  document.getElementById('admin-panel').classList.add('open');
+  loadAdminConcerts();
+}
+``
 
   document.getElementById('admin-panel').classList.add('open');
   loadAdminConcerts();
